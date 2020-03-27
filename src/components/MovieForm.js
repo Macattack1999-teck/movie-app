@@ -4,11 +4,18 @@ import { MovieContext } from '../contexts/MovieContext';
 const MovieForm = () => {
   const [title, setTitle] = useState('')
   const [genre, setGenre] = useState('')
-  const { addMovie } = useContext(MovieContext)
+  const { dispatch } = useContext(MovieContext)
+
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    addMovie(title, genre)
+    dispatch({
+      type: 'ADD_MOVIE',
+      movie: {
+        title: title,
+        genre: genre
+      }
+    })
     setTitle('')
     setGenre('')
   }

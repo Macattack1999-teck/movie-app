@@ -1,27 +1,21 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { createContext, useReducer, useEffect } from 'react';
+import { movieReducer } from '../reducers/movieReducer';
 
 export const MovieContext = createContext()
 
-const localStorageMovies = JSON.parse(localStorage.getItem('movies'))
-
 const MovieContextProvider = (props) => {
 
-  const [movies, setMovies] = useState(localStorageMovies || [])
-  
+  const [movies, dispatch] = useReducer(movieReducer, [], () => {
+    const localStorageMovies = localStorage.getItem('movies')
+    return localStorageMovies ? JSON.parse(localStorageMovies) : []
+  })
+
   useEffect(() => {
     localStorage.setItem('movies', JSON.stringify(movies))
   }, [movies])
 
-  const addMovie = (title, genre) => {
-    setMovies([...movies, {title: title, genre: genre, id: uuidv4()}])
-  }
-
-  const removeMovie = (id) => {
-    setMovies(movies.filter(movie => movie.id !== id))
-  }
   return (
-    <MovieContext.Provider value={{movies, addMovie: addMovie, removeMovie: removeMovie}}>
+    <MovieContext.Provider value={{movies, dispatch}}>
       {props.children}
     </MovieContext.Provider>
   )
